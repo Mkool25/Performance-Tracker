@@ -1,0 +1,5 @@
+{
+  "name": "Performance Tracker",
+  "description": "A daily performance tracking application with points, streaks, and analytics.",
+  "requestFramePermissions": []
+}
