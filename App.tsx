@@ -9,6 +9,7 @@ import WeeklyView from './pages/WeeklyView';
 import MonthlyView from './pages/MonthlyView';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 import Profile from './pages/Profile';
 
 const ProtectedRoute = () => {
@@ -53,6 +54,7 @@ const App: React.FC = () => {
             <Route element={<PublicRoute />}>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
 
             {/* Protected Routes */}

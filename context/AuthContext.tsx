@@ -7,6 +7,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  resetPassword: (email: string, newPassword?: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -86,8 +87,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('perf-tracker-session');
   };
 
+  const resetPassword = async (email: string, newPassword?: string) => {
+    await new Promise(resolve => setTimeout(resolve, 800));
+    const users = JSON.parse(localStorage.getItem('perf-tracker-users') || '[]');
+    const userIndex = users.findIndex((u: any) => u.email === email);
+
+    if (userIndex === -1) {
+      throw new Error('No account found with this email address');
+    }
+
+    if (newPassword) {
+      users[userIndex].password = newPassword;
+      localStorage.setItem('perf-tracker-users', JSON.stringify(users));
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, login, signup, logout, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );
