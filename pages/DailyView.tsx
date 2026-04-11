@@ -3,7 +3,7 @@ import React, { useMemo, useCallback, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { format, parseISO, addDays, subDays } from 'date-fns';
-import { ChevronLeft, ChevronRight, Check, AlertTriangle, Settings2, Plus, Trash2, Save, X, Copy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, AlertTriangle, Settings2, Plus, Trash2, Save, X } from 'lucide-react';
 import { getStatusColorClasses } from '../utils';
 import { Task, SubOption } from '../types';
 
@@ -229,7 +229,7 @@ const TaskItem = React.memo(({
 const DailyView: React.FC = () => {
   const { date } = useParams<{ date: string }>();
   const navigate = useNavigate();
-  const { getDay, updateTask, updateDayTasks, saveTaskTemplate } = useApp();
+  const { getDay, updateTask, updateDayTasks } = useApp();
   const [isEditing, setIsEditing] = useState(false);
 
   // Validate date param or default to today
@@ -279,11 +279,6 @@ const DailyView: React.FC = () => {
      }
   }, [dayData.tasks, updateDayTasks, targetDate]);
 
-  const handleSaveAsDefault = () => {
-     saveTaskTemplate(dayData.tasks);
-     alert("Current tasks saved as the default template for all new days!");
-  };
-
   return (
     <div className="max-w-3xl mx-auto">
       {/* Header */}
@@ -315,16 +310,6 @@ const DailyView: React.FC = () => {
 
         {/* Edit Toggle */}
         <div className="order-1 md:order-2 self-end md:self-auto flex gap-2">
-           {isEditing && (
-             <button 
-               onClick={handleSaveAsDefault}
-               className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/40"
-               title="Make these tasks the default for new days"
-             >
-               <Copy size={18} />
-               <span className="hidden sm:inline">Save as Default</span>
-             </button>
-           )}
            <button 
              onClick={() => setIsEditing(!isEditing)}
              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${

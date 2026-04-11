@@ -97,7 +97,7 @@ export const calculateStreak = (days: Record<string, DayEntry>): number => {
   } else {
     // Today is NOT green (Gap).
     // Logic: 
-    // - If we have a past streak, that is the "Current Active Streak" (at risk).
+    // - If we have a past streak, that is the "Current Yellow Streak" (at risk).
     // - If we have NO past streak (0), but we have a future streak (started working ahead), show the future streak.
     // - If we have BOTH, technically the gap breaks the streak, but usually we prioritize the past streak until it's lost.
     if (pastStreak > 0) return pastStreak;

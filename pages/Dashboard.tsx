@@ -147,7 +147,7 @@ const Dashboard: React.FC = () => {
             <Info size={12} className="text-amber-500" />
           </div>
           <div>
-            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">Active Streak</p>
+            <p className="text-sm font-medium text-slate-400 dark:text-slate-500 uppercase tracking-wider">Yellow Streak</p>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-3xl font-bold text-amber-600 dark:text-amber-500">{yellowStreak}</span>
               <span className="text-sm text-slate-500 dark:text-slate-400">Consistency</span>

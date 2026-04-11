@@ -174,6 +174,12 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
       return {
         ...prev,
+        // Automatically carry forward structural changes to the template for future days
+        taskTemplate: newTasks.map(t => ({
+          ...t,
+          isCompleted: false,
+          selectedSubOptionId: null
+        })),
         days: {
           ...prev.days,
           [date]: {
