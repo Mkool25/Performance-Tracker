@@ -104,3 +104,49 @@ export const calculateStreak = (days: Record<string, DayEntry>): number => {
     return futureStreak;
   }
 };
+
+export const calculateYellowStreak = (days: Record<string, DayEntry>): number => {
+  const today = new Date();
+  const todayKey = format(today, 'yyyy-MM-dd');
+  
+  const isEligible = (status: PerformanceColor) => status === 'green' || status === 'yellow';
+
+  const todayData = days[todayKey];
+  const isTodayEligible = todayData && isEligible(todayData.status);
+  
+  let pastStreak = 0;
+  let pastCheck = subDays(today, 1);
+  while (true) {
+    const key = format(pastCheck, 'yyyy-MM-dd');
+    const dayData = days[key];
+    if (dayData && isEligible(dayData.status)) {
+      pastStreak++;
+      pastCheck = subDays(pastCheck, 1);
+    } else break;
+  }
+
+  let futureStreak = 0;
+  let futureCheck = addDays(today, 1);
+  while (true) {
+    const key = format(futureCheck, 'yyyy-MM-dd');
+    const dayData = days[key];
+    if (dayData && isEligible(dayData.status)) {
+      futureStreak++;
+      futureCheck = addDays(futureCheck, 1);
+    } else break;
+  }
+
+  if (isTodayEligible) {
+    return pastStreak + 1 + futureStreak;
+  } else {
+    if (pastStreak > 0) return pastStreak;
+    return futureStreak;
+  }
+};
+
+export const getStatusDistribution = (days: DayEntry[]) => {
+  return days.reduce((acc, day) => {
+    acc[day.status]++;
+    return acc;
+  }, { green: 0, yellow: 0, red: 0 });
+};

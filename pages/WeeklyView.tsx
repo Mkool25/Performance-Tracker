@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getStatusColorClasses, getStatusBg } from '../utils';
+import { getStatusColorClasses, getStatusBg, getStatusDistribution } from '../utils';
 
 const WeeklyView: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -13,16 +13,19 @@ const WeeklyView: React.FC = () => {
   const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday start
   const end = endOfWeek(currentDate, { weekStartsOn: 1 });
   
-  const daysInWeek = eachDayOfInterval({ start, end });
+  const daysInWeek = useMemo(() => eachDayOfInterval({ start, end }), [start, end]);
 
   // Calculate Week Totals
-  const weekStats = daysInWeek.reduce((acc, day) => {
-    const dayStr = format(day, 'yyyy-MM-dd');
-    const data = getDay(dayStr);
-    acc.totalPoints += data.totalPoints;
-    if (data.status === 'green') acc.greenDays++;
-    return acc;
-  }, { totalPoints: 0, greenDays: 0 });
+  const weekStats = useMemo(() => {
+    const days = daysInWeek.map(day => getDay(format(day, 'yyyy-MM-dd')));
+    const distribution = getStatusDistribution(days);
+    const totalPoints = days.reduce((acc, d) => acc + d.totalPoints, 0);
+    
+    return {
+      totalPoints,
+      ...distribution
+    };
+  }, [daysInWeek, getDay]);
 
   return (
     <div className="space-y-6">
@@ -54,14 +57,34 @@ const WeeklyView: React.FC = () => {
       </div>
 
       {/* Week Stats */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-indigo-600 dark:bg-indigo-700 text-white p-5 rounded-2xl shadow-md transition-colors">
             <p className="text-indigo-200 text-xs font-bold uppercase tracking-wider">Total Points</p>
             <p className="text-3xl font-bold mt-1">{weekStats.totalPoints}</p>
         </div>
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors">
-            <p className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">Perfect Days</p>
-            <p className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">{weekStats.greenDays} <span className="text-base text-slate-400 dark:text-slate-600 font-normal">/ 7</span></p>
+        
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors flex items-center justify-between">
+            <div>
+              <p className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">Perfect Days</p>
+              <p className="text-3xl font-bold mt-1 text-emerald-600 dark:text-emerald-400">{weekStats.green}</p>
+            </div>
+            <CheckCircle2 className="text-emerald-500/20" size={40} />
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors flex items-center justify-between">
+            <div>
+              <p className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">In Progress</p>
+              <p className="text-3xl font-bold mt-1 text-amber-500 dark:text-amber-400">{weekStats.yellow}</p>
+            </div>
+            <Clock className="text-amber-500/20" size={40} />
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 transition-colors flex items-center justify-between">
+            <div>
+              <p className="text-slate-400 dark:text-slate-500 text-xs font-bold uppercase tracking-wider">No Progress</p>
+              <p className="text-3xl font-bold mt-1 text-rose-500 dark:text-rose-400">{weekStats.red}</p>
+            </div>
+            <XCircle className="text-rose-500/20" size={40} />
         </div>
       </div>
 

@@ -3,7 +3,8 @@ import React, { useState, useMemo } from 'react';
 import { useApp } from '../context/AppContext';
 import { format, startOfYear, eachMonthOfInterval, endOfYear, startOfMonth, endOfMonth, eachDayOfInterval, addYears, subYears } from 'date-fns';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar, CheckCircle2, Clock, XCircle } from 'lucide-react';
+import { getStatusDistribution } from '../utils';
 
 const MonthlyView: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -25,15 +26,14 @@ const MonthlyView: React.FC = () => {
       let totalPoints = 0;
       let potentialPoints = days.length * state.settings.dailyTarget;
       
-      days.forEach(day => {
+      const dayEntries = days.map(day => {
         const dateStr = format(day, 'yyyy-MM-dd');
-        // Direct state access is faster than calling getDay for bulk operations
         const entry = state.days[dateStr];
-        if (entry) {
-          totalPoints += entry.totalPoints;
-        }
+        if (entry) totalPoints += entry.totalPoints;
+        return entry || { status: 'red' as const };
       });
 
+      const distribution = getStatusDistribution(dayEntries as any);
       const percentage = potentialPoints > 0 ? Math.round((totalPoints / potentialPoints) * 100) : 0;
       
       return {
@@ -42,6 +42,7 @@ const MonthlyView: React.FC = () => {
         totalPoints,
         potentialPoints,
         percentage,
+        ...distribution,
         chartData: [
           { name: 'Completed', value: totalPoints },
           { name: 'Remaining', value: Math.max(0, potentialPoints - totalPoints) }
@@ -91,7 +92,7 @@ const MonthlyView: React.FC = () => {
                 {isCurrentMonth && <span className="text-[10px] font-bold bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-300 px-2 py-1 rounded-full">CURRENT</span>}
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-4 mb-4">
                  <div className="h-16 w-16 relative">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -119,6 +120,21 @@ const MonthlyView: React.FC = () => {
                    <p className="text-2xl font-bold text-slate-900 dark:text-white">{data.totalPoints}</p>
                    <p className="text-xs text-slate-500 dark:text-slate-400">Points Earned</p>
                  </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-slate-50 dark:border-slate-800">
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Green</p>
+                  <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{data.green}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Yellow</p>
+                  <p className="text-sm font-bold text-amber-500 dark:text-amber-400">{data.yellow}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Red</p>
+                  <p className="text-sm font-bold text-rose-500 dark:text-rose-400">{data.red}</p>
+                </div>
               </div>
             </div>
           );
