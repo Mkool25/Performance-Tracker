@@ -50,28 +50,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
   // Load data when user changes
   useEffect(() => {
-    if (user) {
-      const key = `perf-tracker-data-${user.id}`;
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          // Ensure structure matches AppState
-          setState({
-             ...parsed,
-             days: parsed.days || {},
-             settings: parsed.settings || { dailyTarget: DAILY_TARGET_DEFAULT }
-          });
-        } catch (e) {
-          console.error("Failed to parse saved data", e);
-          setState({ days: {}, settings: { dailyTarget: DAILY_TARGET_DEFAULT } });
-        }
-      } else {
+    const key = user ? `perf-tracker-data-${user.id}` : 'perf-tracker-data';
+    const saved = localStorage.getItem(key);
+    
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Ensure structure matches AppState
+        setState({
+            ...parsed,
+            days: parsed.days || {},
+            settings: parsed.settings || { dailyTarget: DAILY_TARGET_DEFAULT }
+        });
+      } catch (e) {
+        console.error("Failed to parse saved data", e);
         setState({ days: {}, settings: { dailyTarget: DAILY_TARGET_DEFAULT } });
       }
     } else {
-        // Reset state on logout
-        setState({ days: {}, settings: { dailyTarget: DAILY_TARGET_DEFAULT } });
+      setState({ days: {}, settings: { dailyTarget: DAILY_TARGET_DEFAULT } });
     }
   }, [user]);
 
@@ -83,9 +79,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   }, [state]);
 
   useEffect(() => {
-    if (!user) return;
-
-    const key = `perf-tracker-data-${user.id}`;
+    const key = user ? `perf-tracker-data-${user.id}` : 'perf-tracker-data';
     
     const handler = setTimeout(() => {
       if (Object.keys(stateRef.current.days).length > 0 || stateRef.current.taskTemplate) {

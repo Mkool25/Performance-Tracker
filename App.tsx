@@ -57,12 +57,16 @@ const App: React.FC = () => {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
             </Route>
 
-            {/* Protected Routes */}
-            <Route element={<ProtectedRoute />}>
+            {/* Main App Routes (Publicly Accessible) */}
+            <Route element={<Layout><Outlet /></Layout>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/day/:date" element={<DailyView />} />
               <Route path="/weekly" element={<WeeklyView />} />
               <Route path="/monthly" element={<MonthlyView />} />
+            </Route>
+
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
               <Route path="/profile" element={<Profile />} />
             </Route>
 

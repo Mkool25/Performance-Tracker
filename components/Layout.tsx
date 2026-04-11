@@ -51,6 +51,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </nav>
 
         <div className="p-4 border-t border-slate-100 dark:border-slate-800 space-y-3">
+          {!user && (
+            <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-900/50 mb-2">
+              <p className="text-xs text-indigo-700 dark:text-indigo-300 font-medium mb-2">Guest Mode</p>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400 mb-3 leading-relaxed">Your progress is saved locally. Sign up to sync across devices.</p>
+              <Link to="/signup" className="block text-center py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-colors">
+                Sign Up Now
+              </Link>
+            </div>
+          )}
+
           <button
             onClick={toggleTheme}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-600 dark:text-slate-400"
@@ -62,15 +72,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </button>
 
           <Link 
-            to="/profile"
+            to={user ? "/profile" : "/login"}
             className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-slate-700 dark:text-slate-200"
           >
              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-sm">
-                {user?.name.charAt(0).toUpperCase()}
+                {user ? user.name.charAt(0).toUpperCase() : 'G'}
              </div>
              <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-medium truncate">{user?.name}</p>
-                <p className="text-xs text-slate-400 dark:text-slate-500 truncate">View Profile</p>
+                <p className="text-sm font-medium truncate">{user ? user.name : 'Guest User'}</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500 truncate">{user ? 'View Profile' : 'Sign In'}</p>
              </div>
           </Link>
         </div>
@@ -95,13 +105,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             );
         })}
         <Link
-          to="/profile"
+          to={user ? "/profile" : "/login"}
           className={`flex flex-col items-center p-2 rounded-lg ${
              location.pathname === '/profile' ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'
           }`}
         >
           <User size={24} />
-          <span className="text-[10px] mt-1">Profile</span>
+          <span className="text-[10px] mt-1">{user ? 'Profile' : 'Sign In'}</span>
         </Link>
       </div>
 
